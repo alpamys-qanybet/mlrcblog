@@ -1,0 +1,78 @@
+<html>
+<head>
+
+<link rel="stylesheet" type="text/css" href="images/style.css" />
+
+<script type="text/javascript" src="static/js/jquery.js"></script>
+<script type="text/javascript">
+$(document).ready(function()
+{
+	var dataString = 'content=news' +
+					 '&id=' + 102;
+
+	$.ajax
+	(
+		{
+			type: 'POST',
+			url: 'http://localhost:8080/mlrc/oper/cmsaasservlet.seam',
+			dataType: 'json',
+			data: dataString,
+			success: function(news)
+			{
+				getNews(news);
+			}
+		}
+	);
+});
+
+function getNews(obj)
+{
+	var news = obj;
+
+	var web_site = news.web_site;
+
+	$("<link/>", {
+   		rel: "stylesheet",
+   		type: "text/css",
+   		href: web_site.cssUrl
+	}).appendTo("head");
+
+	for (var i = 0; i <news.count; i++)
+	{
+		var article =  news.articles[i];
+		getArticle(article);
+	}
+}
+
+function getArticle(article)
+{
+	var id = article.id;
+	$('#middle_side').append('<div id = "article_' + id + '"></div>');
+	$('div#article_' + id).append('<img/>');
+	$('div#article_' + id).append('<div class="article_text"></div>');
+	
+	$('div#article_' + id + ' img').attr('src', article.icon_host);
+	$('div#article_' + id + ' img').css({ 'height': '200px' });
+	$('div#article_' + id +' div.article_text').append(article.short_text);
+	$('div#article_' + id + ' .article_text').append('<div class="read_more"><a href = "article.php?id=' + id + '" id = "articleReadMore_' + id + '"></a></div>');
+	$('#articleReadMore_' + id).append('<button class = "button_accept" onclick = "readMore(' + id + ')">More..</button>');
+}
+
+function readMore(id)
+{
+	$('a#articleReadMore_'+id).click(function() {
+		$(this).attr('target', '_blank');
+	});
+}
+</script>
+</head>
+
+<body>
+	<h2>News</h2>
+	<div id="content">
+		<div id="left_side"></div>
+		<div id="right_side"></div>
+		<div id="middle_side"></div>
+	</div> 
+</body>
+</html>
